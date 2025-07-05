@@ -2,150 +2,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Daily Catholic Readings</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="dark">
-    <style>
-        :root {
-            --bg: #1b1f23;
-            --fg: #f0f0f0;
-            --card-bg: #2c3138;
-            --accent: #86aaff;
-            --header-blue: #4a90e2;
-            --link: #8ab4f8;
-            --font-size: 1.2rem;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--fg);
-            margin: 0;
-            padding: 1rem;
-            font-size: var(--font-size);
-        }
-        h1 {
-            text-align: center;
-            font-size: 1.5rem;
-            margin-top: 0.5rem;
-            margin-bottom: 1rem;
-            color: var(--header-blue);
-        }
-        .reading {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-        h2 {
-            font-size: 1.2rem;
-            color: var(--accent);
-        }
-        iframe {
-            border: none;
-            width: 100%;
-            height: 500px;
-            margin-top: 0.5rem;
-        }
-        summary {
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            margin-top: 1rem;
-            color: var(--link);
-        }
-        details {
-            margin-top: 0.5rem;
-        }
-        .error {
-            color: red;
-            font-weight: bold;
-            text-align: center;
-        }
-        
-    </style>
+  <meta charset="UTF-8" />
+  <title>Daily Catholic Readings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <style>
+    :root {
+      --bg: #1b1f23;
+      --fg: #f0f0f0;
+      --card-bg: #2c3138;
+      --accent: #86aaff;
+      --header-blue: #4a90e2;
+      --link: #8ab4f8;
+      --font-size: 1.2rem;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      margin: 0;
+      padding: 1rem;
+      font-size: var(--font-size);
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      color: var(--header-blue);
+    }
+    .reading {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    h2 {
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+    iframe {
+      border: none;
+      width: 100%;
+      height: 500px;
+      margin-top: 0.5rem;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      margin-top: 1rem;
+      color: var(--link);
+    }
+    details {
+      margin-top: 0.5rem;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-    <h1 id="header">Daily Catholic Readings</h1>
-    <div id="readings"></div>
-    <div class="nav-buttons">
-        <button onclick="adjustDate(-1)">⬅️ Yesterday</button>
-        <button onclick="adjustDate(1)">➡️ Tomorrow</button>
-    </div>
+  <h1 id="header">Daily Catholic Readings</h1>
+  <div id="readings"></div>
+  <script>
+    const currentDate = new Date();
+    const yyyy = currentDate.getFullYear();
+    const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(currentDate.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
 
-    <script>
-    let currentDate = new Date();
+    const friendlyDate = currentDate.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
 
-    function adjustDate(offset) {
-        currentDate.setDate(currentDate.getDate() + offset);
-        // Force reload
-        document.getElementById("readings").innerHTML = "";
-        loadReadings();
-    }
+    document.getElementById("header").innerText = `📅 Daily Catholic Readings for ${friendlyDate}`;
 
     async function loadReadings() {
-        const yyyy = currentDate.getFullYear();
-        const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const dd = String(currentDate.getDate()).padStart(2, '0');
-        const todayStr = `${yyyy}-${mm}-${dd}`;
+      try {
+        const response = await fetch("usccb_readings_2025.json");
+        const data = await response.json();
+        const entry = data.find(d => d.date === todayStr);
+        const container = document.getElementById("readings");
+        container.innerHTML = "";
 
-        const friendlyDate = currentDate.toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
+        if (!entry) {
+          container.innerHTML = `<p class="error">No readings found for ${todayStr}.</p>`;
+          return;
+        }
+
+        entry.readings.forEach(reading => {
+          const title = reading.title;
+          const icons = {
+            "First Reading": "📖",
+            "Second Reading": "📖",
+            "Responsorial Psalm": "🙏",
+            "Alleluia": "😇",
+            "Gospel": "✝️",
+            "Reading": "📖"
+          };
+          const icon = icons[title] || "📖";
+          const ref = encodeURIComponent(reading.text);
+          const icbLink = `https://www.biblegateway.com/passage/?search=${ref}&version=ICB`;
+          const block = `
+            <div class="reading">
+              <h2>${icon} ${title}</h2>
+              <p><strong>${reading.text}</strong></p>
+              <details>
+                <summary>🔽 Read passage in ICB</summary>
+                <iframe src="${icbLink}"></iframe>
+                <noscript><a href="${icbLink}" target="_blank">Open passage on BibleGateway</a></noscript>
+              </details>
+            </div>
+          `;
+          container.insertAdjacentHTML("beforeend", block);
         });
 
-        document.getElementById("header").innerText = `📅 Daily Catholic Readings for ${friendlyDate}`;
-
-        try {
-            const response = await fetch("usccb_readings_2025.json");
-            const data = await response.json();
-
-            const entry = data.find(d => d.date === todayStr);
-            const container = document.getElementById("readings");
-            container.innerHTML = "";
-
-            if (!entry) {
-                container.innerHTML = `<p class="error">No readings found for ${todayStr}.</p>`;
-                return;
-            }
-
-            entry.readings.forEach(reading => {
-                const title = reading.title;
-                const icons = {
-                    "First Reading": "📖",
-                    "Second Reading": "📖",
-                    "Responsorial Psalm": "🙏",
-                    "Alleluia": "😇",
-                    "Gospel": "✝️",
-                    "Reading": "📖"
-                };
-                const icon = icons[title] || "📖";
-                const ref = encodeURIComponent(reading.text);
-                const icbLink = `https://www.biblegateway.com/passage/?search=${ref}&version=ICB`;
-                const block = `
-                    <div class="reading">
-                        <h2>${icon} ${title}</h2>
-                        <p><strong>${reading.text}</strong></p>
-                        <details>
-                            <summary>🔽 Read passage in ICB</summary>
-                            <iframe src="${icbLink}"></iframe>
-                            <noscript><a href="${icbLink}" target="_blank">Open passage on BibleGateway</a></noscript>
-                        </details>
-                    </div>
-                `;
-                container.insertAdjacentHTML("beforeend", block);
-            });
-
-        } catch (err) {
-            document.getElementById("readings").innerHTML = `<p class="error">Error loading readings for ${todayStr}.</p>`;
-            console.error(err);
-        }
+      } catch (err) {
+        document.getElementById("readings").innerHTML = `<p class="error">Error loading readings for ${todayStr}.</p>`;
+        console.error(err);
+      }
     }
 
     loadReadings();
-    </script>
+  </script>
 </body>
 </html>
