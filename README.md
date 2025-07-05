@@ -1,12 +1,13 @@
 # Daily Readings App
 
-This is a personal-use app for viewing Catholic liturgical readings for the current day. It includes:
-- Automatic date detection
-- Embedded International Children's Bible links
-- No navigation buttons (today-only focus)
+This is a personal-use web app for displaying Catholic liturgical readings for the current day.
 
-To update:
-1. Replace the JSON file when new readings are available.
-2. Re-upload to GitHub and Netlify.
+## Features
+- Loads today's date automatically
+- Clean mobile-optimized layout
+- BibleGateway ICB embeds
+- NO navigation buttons (today-only)
 
-Built for clarity and simplicity.
+## Deploy
+1. Upload to GitHub
+2. Connect to Netlify for instant, free hosting
