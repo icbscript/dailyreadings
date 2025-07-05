@@ -83,15 +83,17 @@
     <h1 id="header">Daily Catholic Readings</h1>
     <div id="readings"></div>
     <div class="nav-buttons">
-        <button onclick="changeDate(-1)">⬅️ Yesterday</button>
-        <button onclick="changeDate(1)">➡️ Tomorrow</button>
+        <button onclick="adjustDate(-1)">⬅️ Yesterday</button>
+        <button onclick="adjustDate(1)">➡️ Tomorrow</button>
     </div>
 
     <script>
     let currentDate = new Date();
 
-    function changeDate(offset) {
+    function adjustDate(offset) {
         currentDate.setDate(currentDate.getDate() + offset);
+        // Force reload
+        document.getElementById("readings").innerHTML = "";
         loadReadings();
     }
 
