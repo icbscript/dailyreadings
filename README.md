@@ -1,13 +1,13 @@
-# Daily Readings App
+# Daily Readings App (With Icons)
 
-This is a personal-use web app for displaying Catholic liturgical readings for the current day.
+This is a personal-use Catholic readings app showing today's readings with ICB links.
 
 ## Features
-- Loads today's date automatically
-- Clean mobile-optimized layout
-- BibleGateway ICB embeds
-- NO navigation buttons (today-only)
+- Mobile-optimized
+- BibleGateway embeds
+- Favicon (32×32) for browser tabs
+- Apple Touch Icon (180×180) for iPhone home screen
 
 ## Deploy
-1. Upload to GitHub
-2. Connect to Netlify for instant, free hosting
+1. Upload all files to GitHub
+2. Connect to Netlify (or host anywhere)
